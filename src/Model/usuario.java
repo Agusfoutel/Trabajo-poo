@@ -2,7 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 
-public abstract class usuario {
+public abstract class usuario implements IAutenticable{
     protected String nombre;
     protected int id;
     protected String correo;
