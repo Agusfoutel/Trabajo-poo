@@ -2,7 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-// Hola
+// Hola A
 public class alumno extends usuario {
     private int legajo;
     private String nombreAlumno;
