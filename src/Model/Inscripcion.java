@@ -13,7 +13,13 @@ public class Inscripcion { // Cambiado a CamelCase
     private int alumnoId;
     private int cursoCodigo;
 
-    public Inscripcion(boolean estado, Curso curso, Alumno alumno, LocalDate fechaInscripcion) { // Cambiado a CamelCase
+    // ¡NUEVOS ATRIBUTOS PARA EL PAGO!
+    private MetodoPago metodoPago;
+    private double montoPagado;
+    private int cuotas; // Cuotas, 1 por defecto para efectivo/débito
+
+    public Inscripcion(boolean estado, Curso curso, Alumno alumno, LocalDate fechaInscripcion,
+                       MetodoPago metodoPago, double montoPagado, int cuotas) { // ¡Constructor Actualizado!
         this.estado = estado;
         this.curso = curso;
         this.alumno = alumno;
@@ -24,10 +30,16 @@ public class Inscripcion { // Cambiado a CamelCase
         // Almacenar IDs para la persistencia
         this.alumnoId = alumno.getId();
         this.cursoCodigo = curso.getCodigo();
+
+        // ¡Inicializar nuevos atributos de pago!
+        this.metodoPago = metodoPago;
+        this.montoPagado = montoPagado;
+        this.cuotas = cuotas;
     }
 
-    // Constructor para cargar desde JSON
-    public Inscripcion(int idInscripcion, boolean estado, int alumnoId, int cursoCodigo, LocalDate fechaInscripcion) {
+    // Constructor para cargar desde JSON (¡ACTUALIZADO!)
+    public Inscripcion(int idInscripcion, boolean estado, int alumnoId, int cursoCodigo, LocalDate fechaInscripcion,
+                       MetodoPago metodoPago, double montoPagado, int cuotas) {
         this.idInscripcion = idInscripcion;
         this.estado = estado;
         this.alumnoId = alumnoId;
@@ -36,6 +48,11 @@ public class Inscripcion { // Cambiado a CamelCase
         // Los objetos Alumno y Curso se asignarán durante la reconstrucción
         this.alumno = null;
         this.curso = null;
+
+        // ¡Inicializar nuevos atributos de pago!
+        this.metodoPago = metodoPago;
+        this.montoPagado = montoPagado;
+        this.cuotas = cuotas;
     }
 
 
@@ -73,5 +90,17 @@ public class Inscripcion { // Cambiado a CamelCase
 
     public int getCursoCodigo() {
         return cursoCodigo;
+    }
+
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
+    }
+
+    public double getMontoPagado() {
+        return montoPagado;
+    }
+
+    public int getCuotas() {
+        return cuotas;
     }
 }

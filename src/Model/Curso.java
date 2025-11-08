@@ -10,14 +10,16 @@ public class Curso {
     private Docente docente;
     private List<Inscripcion> inscriptos;
     private List<Calificacion> calificacionesCurso;
+    private double costo; // ¡NUEVO ATRIBUTO!
 
-    public Curso(int codigo, String nombre, int cuposMax, Docente docente) {
+    public Curso(int codigo, String nombre, int cuposMax, Docente docente, double costo) { // ¡Constructor Actualizado!
         this.codigo = codigo;
         this.nombre = nombre;
         this.cuposMax = cuposMax;
         this.docente = docente;
         this.inscriptos = new ArrayList<>();
         this.calificacionesCurso = new ArrayList<>();
+        this.costo = costo; // Inicializar el costo
     }
 
     public void agregarInscripcion(Inscripcion insc) {
@@ -66,5 +68,10 @@ public class Curso {
 
     public void addCalificacion(Calificacion cal) {
         this.calificacionesCurso.add(cal);
+    }
+
+    // ¡NUEVO GETTER PARA EL COSTO!
+    public double getCosto() {
+        return costo;
     }
 }

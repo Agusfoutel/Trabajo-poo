@@ -4,6 +4,7 @@ import Model.GestorArchivos;
 import Model.Alumno;
 import Model.Curso;
 import Model.Inscripcion;
+import Model.MetodoPago; // ¡Importar el nuevo enum!
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -50,7 +51,8 @@ public class VentanaInscripcionCursos extends JFrame implements ActionListener {
         lblTitulo.setForeground(new Color(81, 45, 168));
         panelInscripcion.add(lblTitulo, BorderLayout.NORTH);
 
-        String[] columnNames = {"Código", "Nombre del Curso", "Docente", "Cupo Máximo", "Inscriptos"};
+        // ¡Añadir columna de 'Costo' a la tabla!
+        String[] columnNames = {"Código", "Nombre del Curso", "Docente", "Cupo Máximo", "Inscriptos", "Costo"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -81,11 +83,16 @@ public class VentanaInscripcionCursos extends JFrame implements ActionListener {
         btnVolver.addActionListener(this);
     }
 
-    private void cargarCursosEnTabla(DefaultTableModel model) {
+    // Método público para que VentanaPago pueda acceder y actualizar la tabla
+    public JTable getTablaCursos() {
+        return tablaCursos;
+    }
+
+    public void cargarCursosEnTabla(DefaultTableModel model) {
         model.setRowCount(0);
         List<Curso> cursosDisponibles = GestorArchivos.getCursos();
         if (cursosDisponibles.isEmpty()) {
-            model.addRow(new Object[]{"No hay cursos disponibles.", "", "", "", ""});
+            model.addRow(new Object[]{"No hay cursos disponibles.", "", "", "", "", ""}); // 6 columnas ahora
             return;
         }
 
@@ -98,12 +105,13 @@ public class VentanaInscripcionCursos extends JFrame implements ActionListener {
                         c.getNombre(),
                         c.getDocente() != null ? c.getDocente().getNombre() : "N/A",
                         c.getCuposMax(),
-                        c.getInscriptos().size()
+                        c.getInscriptos().size(),
+                        String.format("%.2f USD", c.getCosto()) // ¡Mostrar el costo!
                 });
             }
         }
         if (model.getRowCount() == 0) {
-            model.addRow(new Object[]{"No hay cursos disponibles para inscribir.", "", "", "", ""});
+            model.addRow(new Object[]{"No hay cursos disponibles para inscribir.", "", "", "", "", ""}); // 6 columnas ahora
         }
     }
 
@@ -150,16 +158,15 @@ public class VentanaInscripcionCursos extends JFrame implements ActionListener {
                 return;
             }
 
+            // Obtener el código del curso de la tabla
             int codigoCurso = (int) tablaCursos.getValueAt(selectedRow, 0);
+
             GestorArchivos.findCursoByCodigo(codigoCurso).ifPresentOrElse(
                     cursoSeleccionado -> {
                         if (cursoSeleccionado.getInscriptos().size() < cursoSeleccionado.getCuposMax()) {
-                            Inscripcion nuevaInscripcion = new Inscripcion(true, cursoSeleccionado, alumnoLogueado, LocalDate.now());
-                            alumnoLogueado.inscribirseEnCurso(nuevaInscripcion);
-                            cursoSeleccionado.agregarInscripcion(nuevaInscripcion);
-                            GestorArchivos.addInscripcion(nuevaInscripcion);
-                            JOptionPane.showMessageDialog(this, "¡Te has inscrito en " + cursoSeleccionado.getNombre() + "!", "Inscripción Exitosa", JOptionPane.INFORMATION_MESSAGE);
-                            cargarCursosEnTabla((DefaultTableModel) tablaCursos.getModel()); // Recargar
+                            // ¡ABRIR LA VENTANA DE PAGO EN LUGAR DE INSCRIBIR DIRECTAMENTE!
+                            new VentanaPago(this, alumnoLogueado, cursoSeleccionado, this);
+                            // La VentanaPago se encargará de la inscripción y de llamar a cargarCursosEnTabla() si es exitosa.
                         } else {
                             JOptionPane.showMessageDialog(this, "El curso " + cursoSeleccionado.getNombre() + " está lleno.", "Error", JOptionPane.ERROR_MESSAGE);
                         }

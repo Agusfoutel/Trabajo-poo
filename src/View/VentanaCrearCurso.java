@@ -17,9 +17,11 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
 
     private Docente docenteLogueado;
     private JPanel panelCrearCurso;
-    private JLabel lblTitulo, lblNombre, lblDescripcion, lblCupo;
-    private JTextField txtNombre, txtDescripcion, txtCupo;
+    private JLabel lblTitulo, lblNombre, lblDescripcion, lblCupo, lblCosto; // ¡Añadir lblCosto!
+    private JTextField txtNombre, txtDescripcion, txtCupo, txtCosto; // ¡Añadir txtCosto!
     private JButton btnCrear, btnVolver;
+
+
 
     public VentanaCrearCurso(Docente docente) {
         this.docenteLogueado = docente;
@@ -63,8 +65,17 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
         txtCupo = crearCampo("", 200, 190);
         panelCrearCurso.add(txtCupo);
 
-        btnCrear = crearBotonGrande("Crear Curso", 150, 260);
+        // ¡NUEVO CAMPO PARA EL COSTO!
+        lblCosto = new JLabel("Costo del Curso (USD):");
+        lblCosto.setBounds(50, 230, 150, 25); // Ajustar posición
+        panelCrearCurso.add(lblCosto);
+        txtCosto = crearCampo("", 200, 230); // Ajustar posición
+        panelCrearCurso.add(txtCosto);
+
+
+        btnCrear = crearBotonGrande("Crear Curso", 150, 290); // Ajustar posición del botón
         panelCrearCurso.add(btnCrear);
+
 
         btnVolver = crearBotonPequeno("← Volver", 30, 20);
         panelCrearCurso.add(btnVolver);
@@ -130,12 +141,19 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
             String nombreCurso = txtNombre.getText();
             String descripcionCurso = txtDescripcion.getText();
             int cupoMaximo;
-
+            double costoCurso;
             try {
                 cupoMaximo = Integer.parseInt(txtCupo.getText());
                 if (cupoMaximo <= 0) throw new NumberFormatException();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el cupo máximo.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try { // ¡Parsear el costo!
+                costoCurso = Double.parseDouble(txtCosto.getText());
+                if (costoCurso < 0) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el costo del curso.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -149,7 +167,8 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
                 codigoCurso = new Random().nextInt(9000) + 1000;
             }
 
-            Curso nuevoCurso = new Curso(codigoCurso, nombreCurso, cupoMaximo, docenteLogueado);
+            Curso nuevoCurso = new Curso(codigoCurso, nombreCurso, cupoMaximo, docenteLogueado, costoCurso);
+
             GestorArchivos.addCurso(nuevoCurso); // Añadir a GestorArchivos (en memoria y a disco)
             docenteLogueado.dictarCurso(nuevoCurso);
 
@@ -158,6 +177,7 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
             txtNombre.setText("");
             txtDescripcion.setText("");
             txtCupo.setText("");
+            txtCosto.setText("");
         }
     }
 }

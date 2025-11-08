@@ -122,8 +122,8 @@ public class GestorArchivos {
         try (FileWriter writer = new FileWriter(RUTA_CURSOS)) {
             for (Curso c : cursosAGuardar) { // Cambiado a CamelCase
                 String json = String.format(
-                        "{\"codigo\":%d,\"nombre\":\"%s\",\"cuposMax\":%d,\"docenteId\":%d}\n",
-                        c.getCodigo(), c.getNombre(), c.getCuposMax(), c.getDocente().getId()
+                        "{\"codigo\":%d,\"nombre\":\"%s\",\"cuposMax\":%d,\"docenteId\":%d,\"costo\":%.2f}\n", // ¡Costo añadido aquí!
+                        c.getCodigo(), c.getNombre(), c.getCuposMax(), c.getDocente().getId(), c.getCosto()
                 );
                 writer.write(json);
             }
@@ -142,24 +142,27 @@ public class GestorArchivos {
                 Pattern nombrePattern = Pattern.compile("\"nombre\":\"([^\"]+)\"");
                 Pattern cuposPattern = Pattern.compile("\"cuposMax\":(\\d+)");
                 Pattern docenteIdPattern = Pattern.compile("\"docenteId\":(\\d+)");
+                Pattern costoPattern = Pattern.compile("\"costo\":([\\d.]+)"); // ¡Patrón para el costo!
 
                 Matcher mCodigo = codigoPattern.matcher(linea);
                 Matcher mNombre = nombrePattern.matcher(linea);
                 Matcher mCupos = cuposPattern.matcher(linea);
                 Matcher mDocenteId = docenteIdPattern.matcher(linea);
+                Matcher mCosto = costoPattern.matcher(linea); // ¡Matcher para el costo!
 
-                if (mCodigo.find() && mNombre.find() && mCupos.find() && mDocenteId.find()) {
+                if (mCodigo.find() && mNombre.find() && mCupos.find() && mDocenteId.find() && mCosto.find()) { // ¡Añadir mCosto.find() aquí!
                     int codigo = Integer.parseInt(mCodigo.group(1));
                     String nombre = mNombre.group(1);
                     int cuposMax = Integer.parseInt(mCupos.group(1));
                     int docenteId = Integer.parseInt(mDocenteId.group(1));
+                    double costo = Double.parseDouble(mCosto.group(1)); // ¡Parsear el costo!
 
                     Optional<Docente> docenteOpt = usuarios.stream() // Cambiado a CamelCase
                             .filter(u -> u instanceof Docente && u.getId() == docenteId) // Cambiado a CamelCase
                             .map(u -> (Docente)u) // Cambiado a CamelCase
                             .findFirst();
                     if (docenteOpt.isPresent()) {
-                        Curso c = new Curso(codigo, nombre, cuposMax, docenteOpt.get()); // Cambiado a CamelCase
+                        Curso c = new Curso(codigo, nombre, cuposMax, docenteOpt.get(), costo); // ¡Constructor de Curso actualizado!
                         cursosCargados.add(c);
                     } else {
                         System.err.println("Advertencia: Docente con ID " + docenteId + " no encontrado para el curso " + nombre);
@@ -174,13 +177,14 @@ public class GestorArchivos {
         return cursosCargados;
     }
 
-    // Nuevo: Guardar Inscripciones
+    // Nuevo: Guardar Inscripciones (¡ACTUALIZADO!)
     public static void guardarInscripciones(List<Inscripcion> inscripcionesAGuardar) { // Cambiado a CamelCase
         try (FileWriter writer = new FileWriter(RUTA_INSCRIPCIONES)) {
             for (Inscripcion i : inscripcionesAGuardar) { // Cambiado a CamelCase
                 String json = String.format(
-                        "{\"idInscripcion\":%d,\"estado\":%b,\"alumnoId\":%d,\"cursoCodigo\":%d,\"fechaInscripcion\":\"%s\"}\n",
-                        i.getIdInscripcion(), i.isEstado(), i.getAlumnoId(), i.getCursoCodigo(), i.getFechaInscripcion().toString()
+                        "{\"idInscripcion\":%d,\"estado\":%b,\"alumnoId\":%d,\"cursoCodigo\":%d,\"fechaInscripcion\":\"%s\",\"metodoPago\":\"%s\",\"montoPagado\":%.2f,\"cuotas\":%d}\n", // ¡Nuevos campos de pago!
+                        i.getIdInscripcion(), i.isEstado(), i.getAlumnoId(), i.getCursoCodigo(), i.getFechaInscripcion().toString(),
+                        i.getMetodoPago().name(), i.getMontoPagado(), i.getCuotas()
                 );
                 writer.write(json);
             }
@@ -190,7 +194,7 @@ public class GestorArchivos {
         }
     }
 
-    // Nuevo: Leer Inscripciones
+    // Nuevo: Leer Inscripciones (¡ACTUALIZADO!)
     public static List<Inscripcion> leerInscripciones() { // Cambiado a CamelCase
         ArrayList<Inscripcion> inscripcionesCargadas = new ArrayList<>(); // Cambiado a CamelCase
         try (BufferedReader reader = new BufferedReader(new FileReader(RUTA_INSCRIPCIONES))) {
@@ -201,27 +205,41 @@ public class GestorArchivos {
                 Pattern alumnoIdPattern = Pattern.compile("\"alumnoId\":(\\d+)");
                 Pattern cursoCodigoPattern = Pattern.compile("\"cursoCodigo\":(\\d+)");
                 Pattern fechaInscripcionPattern = Pattern.compile("\"fechaInscripcion\":\"([^\"]+)\"");
+                Pattern metodoPagoPattern = Pattern.compile("\"metodoPago\":\"([^\"]+)\""); // ¡Patrón para el método de pago!
+                Pattern montoPagadoPattern = Pattern.compile("\"montoPagado\":([\\d.]+)"); // ¡Patrón para el monto pagado!
+                Pattern cuotasPattern = Pattern.compile("\"cuotas\":(\\d+)"); // ¡Patrón para las cuotas!
 
                 Matcher mIdInscripcion = idInscripcionPattern.matcher(linea);
                 Matcher mEstado = estadoPattern.matcher(linea);
                 Matcher mAlumnoId = alumnoIdPattern.matcher(linea);
                 Matcher mCursoCodigo = cursoCodigoPattern.matcher(linea);
                 Matcher mFechaInscripcion = fechaInscripcionPattern.matcher(linea);
+                Matcher mMetodoPago = metodoPagoPattern.matcher(linea); // ¡Matcher para el método de pago!
+                Matcher mMontoPagado = montoPagadoPattern.matcher(linea); // ¡Matcher para el monto pagado!
+                Matcher mCuotas = cuotasPattern.matcher(linea); // ¡Matcher para las cuotas!
 
-                if (mIdInscripcion.find() && mEstado.find() && mAlumnoId.find() && mCursoCodigo.find() && mFechaInscripcion.find()) {
+                if (mIdInscripcion.find() && mEstado.find() && mAlumnoId.find() && mCursoCodigo.find() && mFechaInscripcion.find() &&
+                        mMetodoPago.find() && mMontoPagado.find() && mCuotas.find()) { // ¡Añadir mMetodoPago, mMontoPagado y mCuotas aquí!
                     int idInscripcion = Integer.parseInt(mIdInscripcion.group(1));
                     boolean estado = Boolean.parseBoolean(mEstado.group(1));
                     int alumnoId = Integer.parseInt(mAlumnoId.group(1));
                     int cursoCodigo = Integer.parseInt(mCursoCodigo.group(1));
                     LocalDate fechaInscripcion = LocalDate.parse(mFechaInscripcion.group(1));
+                    MetodoPago metodoPago = MetodoPago.valueOf(mMetodoPago.group(1)); // ¡Parsear a enum!
+                    double montoPagado = Double.parseDouble(mMontoPagado.group(1)); // ¡Parsear el monto pagado!
+                    int cuotas = Integer.parseInt(mCuotas.group(1)); // ¡Parsear las cuotas!
 
-                    inscripcionesCargadas.add(new Inscripcion(idInscripcion, estado, alumnoId, cursoCodigo, fechaInscripcion)); // Cambiado a CamelCase
+
+                    inscripcionesCargadas.add(new Inscripcion(idInscripcion, estado, alumnoId, cursoCodigo, fechaInscripcion,
+                            metodoPago, montoPagado, cuotas)); // ¡Constructor de Inscripcion actualizado!
                 }
             }
         } catch (FileNotFoundException e) {
             System.out.println("No se encontró el archivo de inscripciones (" + RUTA_INSCRIPCIONES + "), se creará al guardar una inscripción.");
         } catch (IOException e) {
             System.out.println("Error al leer el archivo de inscripciones: " + e.getMessage());
+        } catch (IllegalArgumentException e) { // Capturar errores si el enum no se parsea correctamente
+            System.out.println("Error al parsear el método de pago del archivo de inscripciones: " + e.getMessage());
         }
         return inscripcionesCargadas;
     }
