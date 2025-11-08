@@ -3,14 +3,18 @@ package View;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import Model.Docente;
+import Model.GestorArchivos; // Asegurarse que GestorArchivos esté importado para main de prueba
 
 public class VentanaDocente extends JFrame implements ActionListener {
 
     private JPanel panelDocente;
     private JButton btnCrearCurso, btnPonerNota, btnVerAlumno, btnVolver;
     private JLabel lblTitulo, lblBienvenida;
+    private Docente docenteLogueado;
 
-    public VentanaDocente() {
+    public VentanaDocente(Docente docente) {
+        this.docenteLogueado = docente;
         setTitle("Docente - Plataforma de Cursos");
         setSize(700, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -33,7 +37,7 @@ public class VentanaDocente extends JFrame implements ActionListener {
         lblTitulo.setBounds(200, 40, 300, 30);
         panelDocente.add(lblTitulo);
 
-        lblBienvenida = new JLabel("Bienvenido, docente", SwingConstants.CENTER);
+        lblBienvenida = new JLabel("Bienvenido, " + docenteLogueado.getNombre(), SwingConstants.CENTER);
         lblBienvenida.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lblBienvenida.setForeground(new Color(106, 27, 154));
         lblBienvenida.setBounds(200, 80, 300, 20);
@@ -56,7 +60,6 @@ public class VentanaDocente extends JFrame implements ActionListener {
         btnVolver.addActionListener(this);
     }
 
-    // --- Reutilizo las mismas funciones de estilo que en VentanaPrincipal/VentanaAlumno ---
     private JButton crearBoton(String texto, int x, int y) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, 160, 60);
@@ -96,24 +99,20 @@ public class VentanaDocente extends JFrame implements ActionListener {
         Object src = e.getSource();
 
         if (src == btnCrearCurso) {
-            // implementar creación de curso (abrir formulario, guardar con GestorJSON, etc.)
-            JOptionPane.showMessageDialog(this, "Abrir: Crear Curso (a implementar).", "Crear Curso", JOptionPane.INFORMATION_MESSAGE);
+            new VentanaCrearCurso(docenteLogueado).setVisible(true);
         } else if (src == btnPonerNota) {
-            // implementar poner notas (seleccionar alumno/curso, ingresar nota, guardar)
-            JOptionPane.showMessageDialog(this, "Abrir: Poner Nota (a implementar).", "Poner Nota", JOptionPane.INFORMATION_MESSAGE);
+            new VentanaPonerNota(docenteLogueado).setVisible(true);
         } else if (src == btnVerAlumno) {
-            // mostrar listado o detalle de alumnos
-            JOptionPane.showMessageDialog(this, "Abrir: Ver Alumno (a implementar).", "Ver Alumno", JOptionPane.INFORMATION_MESSAGE);
+            new VentanaVerAlumno(docenteLogueado).setVisible(true);
         } else if (src == btnVolver) {
             this.dispose();
-            // si querés volver a VentanaPrincipal, podés descomentar:
-            // SwingUtilities.invokeLater(() -> new VentanaPrincipal());
+            SwingUtilities.invokeLater(() -> new VentanaPrincipal());
         }
     }
 
-    // Aca se puede probar la ventana independientemente de las otras
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new VentanaDocente());
+        Model.GestorArchivos.inicializarDatos();
+        Docente dummyDocente = new Docente("Test Docente", 1234, "docente@mail.com", "pass", java.time.LocalDate.now());
+        SwingUtilities.invokeLater(() -> new VentanaDocente(dummyDocente));
     }
 }
-

@@ -3,14 +3,18 @@ package View;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import Model.Alumno;
+import Model.GestorArchivos; // Asegurarse que GestorArchivos esté importado para main de prueba
 
 public class VentanaAlumno extends JFrame implements ActionListener {
 
     private JPanel panelAlumno;
     private JButton btnNotas, btnInscripcion, btnCursosAnotados, btnVolver;
     private JLabel lblTitulo, lblBienvenida;
+    private Alumno alumnoLogueado;
 
-    public VentanaAlumno() {
+    public VentanaAlumno(Alumno alumno) {
+        this.alumnoLogueado = alumno;
         setTitle("Alumno - Plataforma de Cursos");
         setSize(700, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -33,7 +37,7 @@ public class VentanaAlumno extends JFrame implements ActionListener {
         lblTitulo.setBounds(200, 40, 300, 30);
         panelAlumno.add(lblTitulo);
 
-        lblBienvenida = new JLabel("Bienvenido, alumno", SwingConstants.CENTER);
+        lblBienvenida = new JLabel("Bienvenido, " + alumnoLogueado.getNombre(), SwingConstants.CENTER);
         lblBienvenida.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lblBienvenida.setForeground(new Color(106, 27, 154));
         lblBienvenida.setBounds(200, 80, 300, 20);
@@ -43,7 +47,6 @@ public class VentanaAlumno extends JFrame implements ActionListener {
         btnInscripcion = crearBoton("Inscripción de Cursos", 270, 150);
         btnCursosAnotados = crearBoton("Cursos Anotados", 470, 150);
 
-        // botón volver pequeño similar al otro archivo
         btnVolver = crearBotonPequeno("← Volver", 30, 20);
 
         panelAlumno.add(btnNotas);
@@ -96,25 +99,20 @@ public class VentanaAlumno extends JFrame implements ActionListener {
         Object src = e.getSource();
 
         if (src == btnNotas) {
-            // aquí podés llamar a la lógica para mostrar notas (por ejemplo abrir otra ventana o panel)
-            JOptionPane.showMessageDialog(this, "Abrir: Notas del alumno (a implementar).", "Notas", JOptionPane.INFORMATION_MESSAGE);
+            new VentanaNotasAlumno(alumnoLogueado).setVisible(true);
         } else if (src == btnInscripcion) {
-            // abrir formulario de inscripción de cursos
-            JOptionPane.showMessageDialog(this, "Abrir: Inscripción de Cursos (a implementar).", "Inscripción", JOptionPane.INFORMATION_MESSAGE);
+            new VentanaInscripcionCursos(alumnoLogueado).setVisible(true);
         } else if (src == btnCursosAnotados) {
-            // mostrar cursos en los que el alumno está anotado
-            JOptionPane.showMessageDialog(this, "Abrir: Cursos Anotados (a implementar).", "Cursos Anotados", JOptionPane.INFORMATION_MESSAGE);
+            new VentanaCursosAnotados(alumnoLogueado).setVisible(true);
         } else if (src == btnVolver) {
-            // cerrar esta ventana y (opcionalmente) volver a la principal
             this.dispose();
-            // si querés volver a VentanaPrincipal, descomenta la línea siguiente:
-            // SwingUtilities.invokeLater(() -> new VentanaPrincipal());
+            SwingUtilities.invokeLater(() -> new VentanaPrincipal());
         }
     }
 
-    // Aca se puede probar la ventana independientemente de las otras
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new VentanaAlumno());
+        Model.GestorArchivos.inicializarDatos();
+        Alumno dummyAlumno = new Alumno("Test Alumno", 9999, "test@mail.com", "pass", java.time.LocalDate.now(), 9999);
+        SwingUtilities.invokeLater(() -> new VentanaAlumno(dummyAlumno));
     }
 }
-
