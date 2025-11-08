@@ -12,16 +12,15 @@ import java.util.stream.Collectors;
 
 public class GestorArchivos {
     private static ArrayList<Usuario> usuarios = new ArrayList<>();
-    private static ArrayList<Curso> cursos = new ArrayList<>(); // Cambiado a CamelCase
-    private static ArrayList<Inscripcion> inscripciones = new ArrayList<>(); // Cambiado a CamelCase
-    private static ArrayList<Calificacion> calificaciones = new ArrayList<>(); // Cambiado a CamelCase
+    private static ArrayList<Curso> cursos = new ArrayList<>();
+    private static ArrayList<Inscripcion> inscripciones = new ArrayList<>();
+    private static ArrayList<Calificacion> calificaciones = new ArrayList<>();
 
     private static final String RUTA_USUARIOS = "usuarios.json";
     private static final String RUTA_CURSOS = "cursos.json";
-    private static final String RUTA_INSCRIPCIONES = "inscripciones.json"; // Nueva ruta
-    private static final String RUTA_CALIFICACIONES = "calificaciones.json"; // Nueva ruta
+    private static final String RUTA_INSCRIPCIONES = "inscripciones.json";
+    private static final String RUTA_CALIFICACIONES = "calificaciones.json";
 
-    // --- Métodos de inicialización y reconstrucción ---
     public static void inicializarDatos() {
         System.out.println("Inicializando GestorArchivos...");
 
@@ -34,28 +33,25 @@ public class GestorArchivos {
         System.out.println("Cursos cargados: " + cursos.size());
 
         inscripciones.clear();
-        inscripciones.addAll(leerInscripciones()); // Cargar inscripciones
+        inscripciones.addAll(leerInscripciones());
         System.out.println("Inscripciones cargadas: " + inscripciones.size());
 
         calificaciones.clear();
-        calificaciones.addAll(leerCalificaciones()); // Cargar calificaciones
+        calificaciones.addAll(leerCalificaciones());
         System.out.println("Calificaciones cargadas: " + calificaciones.size());
 
-        reconstruirRelaciones(); // Reconstruir todas las referencias entre objetos
+        reconstruirRelaciones();
     }
 
-    // Método para generar IDs de Usuario
     public static String generarId(String tipo) {
         Random rand = new Random();
         int num = rand.nextInt(9000) + 1000;
         return String.valueOf(num);
     }
 
-    // Método para generar IDs de Inscripcion
     public static int generarIdInscripcion() {
         Random rand = new Random();
-        int id = rand.nextInt(99999) + 10000; // IDs de 5 dígitos
-        // Asegurar que el ID sea único (simple para el TP)
+        int id = rand.nextInt(99999) + 10000;
         int finalId = id;
         while (inscripciones.stream().anyMatch(i -> i.getIdInscripcion() == finalId)) {
             id = rand.nextInt(99999) + 10000;
@@ -63,7 +59,6 @@ public class GestorArchivos {
         return id;
     }
 
-    // --- Métodos de Persistencia ---
 
     public static void guardarUsuarios(List<Usuario> usuariosAGuardar) {
         try (FileWriter writer = new FileWriter(RUTA_USUARIOS)) {
@@ -84,9 +79,9 @@ public class GestorArchivos {
         int idInt = Integer.parseInt(id);
         Usuario nuevoUsuario;
         if ("alumno".equalsIgnoreCase(tipo)) {
-            nuevoUsuario = new Alumno(nombre, idInt, correo, contrasena, LocalDate.now(), idInt); // Cambiado a CamelCase
+            nuevoUsuario = new Alumno(nombre, idInt, correo, contrasena, LocalDate.now(), idInt);
         } else if ("docente".equalsIgnoreCase(tipo)) {
-            nuevoUsuario = new Docente(nombre, idInt, correo, contrasena, LocalDate.now()); // Cambiado a CamelCase
+            nuevoUsuario = new Docente(nombre, idInt, correo, contrasena, LocalDate.now());
         } else {
             System.err.println("Tipo de usuario desconocido: " + tipo);
             return;
@@ -118,11 +113,11 @@ public class GestorArchivos {
         return usuariosCargados;
     }
 
-    public static void guardarCursos(List<Curso> cursosAGuardar) { // Cambiado a CamelCase
+    public static void guardarCursos(List<Curso> cursosAGuardar) {
         try (FileWriter writer = new FileWriter(RUTA_CURSOS)) {
-            for (Curso c : cursosAGuardar) { // Cambiado a CamelCase
+            for (Curso c : cursosAGuardar) {
                 String json = String.format(
-                        "{\"codigo\":%d,\"nombre\":\"%s\",\"cuposMax\":%d,\"docenteId\":%d,\"costo\":%.2f}\n", // ¡Costo añadido aquí!
+                        "{\"codigo\":%d,\"nombre\":\"%s\",\"cuposMax\":%d,\"docenteId\":%d,\"costo\":%.2f}\n",
                         c.getCodigo(), c.getNombre(), c.getCuposMax(), c.getDocente().getId(), c.getCosto()
                 );
                 writer.write(json);
@@ -133,8 +128,8 @@ public class GestorArchivos {
         }
     }
 
-    public static List<Curso> leerCursos() { // Cambiado a CamelCase
-        ArrayList<Curso> cursosCargados = new ArrayList<>(); // Cambiado a CamelCase
+    public static List<Curso> leerCursos() {
+        ArrayList<Curso> cursosCargados = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(RUTA_CURSOS))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
@@ -142,27 +137,27 @@ public class GestorArchivos {
                 Pattern nombrePattern = Pattern.compile("\"nombre\":\"([^\"]+)\"");
                 Pattern cuposPattern = Pattern.compile("\"cuposMax\":(\\d+)");
                 Pattern docenteIdPattern = Pattern.compile("\"docenteId\":(\\d+)");
-                Pattern costoPattern = Pattern.compile("\"costo\":([\\d.]+)"); // ¡Patrón para el costo!
+                Pattern costoPattern = Pattern.compile("\"costo\":([\\d.]+)");
 
                 Matcher mCodigo = codigoPattern.matcher(linea);
                 Matcher mNombre = nombrePattern.matcher(linea);
                 Matcher mCupos = cuposPattern.matcher(linea);
                 Matcher mDocenteId = docenteIdPattern.matcher(linea);
-                Matcher mCosto = costoPattern.matcher(linea); // ¡Matcher para el costo!
+                Matcher mCosto = costoPattern.matcher(linea);
 
-                if (mCodigo.find() && mNombre.find() && mCupos.find() && mDocenteId.find() && mCosto.find()) { // ¡Añadir mCosto.find() aquí!
+                if (mCodigo.find() && mNombre.find() && mCupos.find() && mDocenteId.find() && mCosto.find()) {
                     int codigo = Integer.parseInt(mCodigo.group(1));
                     String nombre = mNombre.group(1);
                     int cuposMax = Integer.parseInt(mCupos.group(1));
                     int docenteId = Integer.parseInt(mDocenteId.group(1));
-                    double costo = Double.parseDouble(mCosto.group(1)); // ¡Parsear el costo!
+                    double costo = Double.parseDouble(mCosto.group(1));
 
-                    Optional<Docente> docenteOpt = usuarios.stream() // Cambiado a CamelCase
-                            .filter(u -> u instanceof Docente && u.getId() == docenteId) // Cambiado a CamelCase
-                            .map(u -> (Docente)u) // Cambiado a CamelCase
+                    Optional<Docente> docenteOpt = usuarios.stream()
+                            .filter(u -> u instanceof Docente && u.getId() == docenteId)
+                            .map(u -> (Docente)u)
                             .findFirst();
                     if (docenteOpt.isPresent()) {
-                        Curso c = new Curso(codigo, nombre, cuposMax, docenteOpt.get(), costo); // ¡Constructor de Curso actualizado!
+                        Curso c = new Curso(codigo, nombre, cuposMax, docenteOpt.get(), costo);
                         cursosCargados.add(c);
                     } else {
                         System.err.println("Advertencia: Docente con ID " + docenteId + " no encontrado para el curso " + nombre);
@@ -177,12 +172,11 @@ public class GestorArchivos {
         return cursosCargados;
     }
 
-    // Nuevo: Guardar Inscripciones (¡ACTUALIZADO!)
-    public static void guardarInscripciones(List<Inscripcion> inscripcionesAGuardar) { // Cambiado a CamelCase
+    public static void guardarInscripciones(List<Inscripcion> inscripcionesAGuardar) {
         try (FileWriter writer = new FileWriter(RUTA_INSCRIPCIONES)) {
-            for (Inscripcion i : inscripcionesAGuardar) { // Cambiado a CamelCase
+            for (Inscripcion i : inscripcionesAGuardar) {
                 String json = String.format(
-                        "{\"idInscripcion\":%d,\"estado\":%b,\"alumnoId\":%d,\"cursoCodigo\":%d,\"fechaInscripcion\":\"%s\",\"metodoPago\":\"%s\",\"montoPagado\":%.2f,\"cuotas\":%d}\n", // ¡Nuevos campos de pago!
+                        "{\"idInscripcion\":%d,\"estado\":%b,\"alumnoId\":%d,\"cursoCodigo\":%d,\"fechaInscripcion\":\"%s\",\"metodoPago\":\"%s\",\"montoPagado\":%.2f,\"cuotas\":%d}\n",
                         i.getIdInscripcion(), i.isEstado(), i.getAlumnoId(), i.getCursoCodigo(), i.getFechaInscripcion().toString(),
                         i.getMetodoPago().name(), i.getMontoPagado(), i.getCuotas()
                 );
@@ -194,9 +188,8 @@ public class GestorArchivos {
         }
     }
 
-    // Nuevo: Leer Inscripciones (¡ACTUALIZADO!)
-    public static List<Inscripcion> leerInscripciones() { // Cambiado a CamelCase
-        ArrayList<Inscripcion> inscripcionesCargadas = new ArrayList<>(); // Cambiado a CamelCase
+    public static List<Inscripcion> leerInscripciones() {
+        ArrayList<Inscripcion> inscripcionesCargadas = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(RUTA_INSCRIPCIONES))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
@@ -205,49 +198,48 @@ public class GestorArchivos {
                 Pattern alumnoIdPattern = Pattern.compile("\"alumnoId\":(\\d+)");
                 Pattern cursoCodigoPattern = Pattern.compile("\"cursoCodigo\":(\\d+)");
                 Pattern fechaInscripcionPattern = Pattern.compile("\"fechaInscripcion\":\"([^\"]+)\"");
-                Pattern metodoPagoPattern = Pattern.compile("\"metodoPago\":\"([^\"]+)\""); // ¡Patrón para el método de pago!
-                Pattern montoPagadoPattern = Pattern.compile("\"montoPagado\":([\\d.]+)"); // ¡Patrón para el monto pagado!
-                Pattern cuotasPattern = Pattern.compile("\"cuotas\":(\\d+)"); // ¡Patrón para las cuotas!
+                Pattern metodoPagoPattern = Pattern.compile("\"metodoPago\":\"([^\"]+)\"");
+                Pattern montoPagadoPattern = Pattern.compile("\"montoPagado\":([\\d.]+)");
+                Pattern cuotasPattern = Pattern.compile("\"cuotas\":(\\d+)");
 
                 Matcher mIdInscripcion = idInscripcionPattern.matcher(linea);
                 Matcher mEstado = estadoPattern.matcher(linea);
                 Matcher mAlumnoId = alumnoIdPattern.matcher(linea);
                 Matcher mCursoCodigo = cursoCodigoPattern.matcher(linea);
                 Matcher mFechaInscripcion = fechaInscripcionPattern.matcher(linea);
-                Matcher mMetodoPago = metodoPagoPattern.matcher(linea); // ¡Matcher para el método de pago!
-                Matcher mMontoPagado = montoPagadoPattern.matcher(linea); // ¡Matcher para el monto pagado!
-                Matcher mCuotas = cuotasPattern.matcher(linea); // ¡Matcher para las cuotas!
+                Matcher mMetodoPago = metodoPagoPattern.matcher(linea);
+                Matcher mMontoPagado = montoPagadoPattern.matcher(linea);
+                Matcher mCuotas = cuotasPattern.matcher(linea);
 
                 if (mIdInscripcion.find() && mEstado.find() && mAlumnoId.find() && mCursoCodigo.find() && mFechaInscripcion.find() &&
-                        mMetodoPago.find() && mMontoPagado.find() && mCuotas.find()) { // ¡Añadir mMetodoPago, mMontoPagado y mCuotas aquí!
+                        mMetodoPago.find() && mMontoPagado.find() && mCuotas.find()) {
                     int idInscripcion = Integer.parseInt(mIdInscripcion.group(1));
                     boolean estado = Boolean.parseBoolean(mEstado.group(1));
                     int alumnoId = Integer.parseInt(mAlumnoId.group(1));
                     int cursoCodigo = Integer.parseInt(mCursoCodigo.group(1));
                     LocalDate fechaInscripcion = LocalDate.parse(mFechaInscripcion.group(1));
-                    MetodoPago metodoPago = MetodoPago.valueOf(mMetodoPago.group(1)); // ¡Parsear a enum!
-                    double montoPagado = Double.parseDouble(mMontoPagado.group(1)); // ¡Parsear el monto pagado!
-                    int cuotas = Integer.parseInt(mCuotas.group(1)); // ¡Parsear las cuotas!
+                    MetodoPago metodoPago = MetodoPago.valueOf(mMetodoPago.group(1));
+                    double montoPagado = Double.parseDouble(mMontoPagado.group(1));
+                    int cuotas = Integer.parseInt(mCuotas.group(1));
 
 
                     inscripcionesCargadas.add(new Inscripcion(idInscripcion, estado, alumnoId, cursoCodigo, fechaInscripcion,
-                            metodoPago, montoPagado, cuotas)); // ¡Constructor de Inscripcion actualizado!
+                            metodoPago, montoPagado, cuotas));
                 }
             }
         } catch (FileNotFoundException e) {
             System.out.println("No se encontró el archivo de inscripciones (" + RUTA_INSCRIPCIONES + "), se creará al guardar una inscripción.");
         } catch (IOException e) {
             System.out.println("Error al leer el archivo de inscripciones: " + e.getMessage());
-        } catch (IllegalArgumentException e) { // Capturar errores si el enum no se parsea correctamente
+        } catch (IllegalArgumentException e) {
             System.out.println("Error al parsear el método de pago del archivo de inscripciones: " + e.getMessage());
         }
         return inscripcionesCargadas;
     }
 
-    // Nuevo: Guardar Calificaciones
-    public static void guardarCalificaciones(List<Calificacion> calificacionesAGuardar) { // Cambiado a CamelCase
+    public static void guardarCalificaciones(List<Calificacion> calificacionesAGuardar) {
         try (FileWriter writer = new FileWriter(RUTA_CALIFICACIONES)) {
-            for (Calificacion c : calificacionesAGuardar) { // Cambiado a CamelCase
+            for (Calificacion c : calificacionesAGuardar) {
                 String json = String.format(
                         "{\"alumnoId\":%d,\"cursoCodigo\":%d,\"nota\":%.2f}\n",
                         c.getAlumnoId(), c.getCursoCodigo(), c.getNota()
@@ -260,9 +252,8 @@ public class GestorArchivos {
         }
     }
 
-    // Nuevo: Leer Calificaciones
-    public static List<Calificacion> leerCalificaciones() { // Cambiado a CamelCase
-        ArrayList<Calificacion> calificacionesCargadas = new ArrayList<>(); // Cambiado a CamelCase
+    public static List<Calificacion> leerCalificaciones() {
+        ArrayList<Calificacion> calificacionesCargadas = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(RUTA_CALIFICACIONES))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
@@ -279,7 +270,7 @@ public class GestorArchivos {
                     int cursoCodigo = Integer.parseInt(mCursoCodigo.group(1));
                     double nota = Double.parseDouble(mNota.group(1));
 
-                    calificacionesCargadas.add(new Calificacion(alumnoId, cursoCodigo, nota)); // Cambiado a CamelCase
+                    calificacionesCargadas.add(new Calificacion(alumnoId, cursoCodigo, nota));
                 }
             }
         } catch (FileNotFoundException e) {
@@ -290,8 +281,6 @@ public class GestorArchivos {
         return calificacionesCargadas;
     }
 
-
-    // --- Métodos de gestión en memoria (para la UI) ---
 
     public static List<Usuario> getUsuarios() {
         return usuarios;
@@ -313,25 +302,25 @@ public class GestorArchivos {
                 .findFirst();
     }
 
-    public static List<Alumno> getAlumnos() { // Cambiado a CamelCase
+    public static List<Alumno> getAlumnos() {
         return usuarios.stream()
-                .filter(u -> u instanceof Alumno) // Cambiado a CamelCase
-                .map(u -> (Alumno) u) // Cambiado a CamelCase
+                .filter(u -> u instanceof Alumno)
+                .map(u -> (Alumno) u)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static List<Docente> getDocentes() { // Cambiado a CamelCase
+    public static List<Docente> getDocentes() {
         return usuarios.stream()
-                .filter(u -> u instanceof Docente) // Cambiado a CamelCase
-                .map(u -> (Docente) u) // Cambiado a CamelCase
+                .filter(u -> u instanceof Docente)
+                .map(u -> (Docente) u)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static List<Curso> getCursos() { // Cambiado a CamelCase
+    public static List<Curso> getCursos() {
         return cursos;
     }
 
-    public static void addCurso(Curso c) { // Cambiado a CamelCase
+    public static void addCurso(Curso c) {
         boolean exists = cursos.stream().anyMatch(existingCurso -> existingCurso.getCodigo() == c.getCodigo());
         if (!exists) {
             cursos.add(c);
@@ -342,33 +331,32 @@ public class GestorArchivos {
         }
     }
 
-    public static Optional<Curso> findCursoByCodigo(int codigo) { // Cambiado a CamelCase
+    public static Optional<Curso> findCursoByCodigo(int codigo) {
         return cursos.stream()
                 .filter(c -> c.getCodigo() == codigo)
                 .findFirst();
     }
 
-    public static List<Inscripcion> getInscripciones() { // Cambiado a CamelCase
+    public static List<Inscripcion> getInscripciones() {
         return inscripciones;
     }
 
-    public static void addInscripcion(Inscripcion i) { // Cambiado a CamelCase
+    public static void addInscripcion(Inscripcion i) {
         inscripciones.add(i);
         System.out.println("Inscripción de " + i.getAlumno().getNombre() + " en " + i.getCurso().getNombre() + " agregada a GestorArchivos (en memoria).");
-        guardarInscripciones(inscripciones); // Guardar inscripciones
+        guardarInscripciones(inscripciones);
     }
 
-    public static List<Calificacion> getCalificaciones() { // Cambiado a CamelCase
+    public static List<Calificacion> getCalificaciones() {
         return calificaciones;
     }
 
-    public static void addCalificacion(Calificacion c) { // Cambiado a CamelCase
+    public static void addCalificacion(Calificacion c) {
         calificaciones.add(c);
         System.out.println("Calificación de " + c.getAlumno().getNombre() + " en " + c.getCurso().getNombre() + " agregada a GestorArchivos (en memoria).");
-        guardarCalificaciones(calificaciones); // Guardar calificaciones
+        guardarCalificaciones(calificaciones);
     }
 
-    // --- Método para validar Login ---
     public static Usuario validarLogin(String nombre, String id, String tipo) {
         for (Usuario u : usuarios) {
             String usuarioIdString = String.valueOf(u.getId());
@@ -379,7 +367,6 @@ public class GestorArchivos {
         return null;
     }
 
-    // --- Métodos auxiliares internos ---
 
     private static Usuario parseUsuarioFromJson(String jsonLine) {
         Pattern idPattern = Pattern.compile("\"id\":\"([^\"]+)\"");
@@ -417,34 +404,32 @@ public class GestorArchivos {
         }
 
         if ("alumno".equalsIgnoreCase(tipo)) {
-            return new Alumno(nombre, idInt, correo, contrasena, fechaRegistro, idInt); // Cambiado a CamelCase
+            return new Alumno(nombre, idInt, correo, contrasena, fechaRegistro, idInt);
         } else if ("docente".equalsIgnoreCase(tipo)) {
-            return new Docente(nombre, idInt, correo, contrasena, fechaRegistro); // Cambiado a CamelCase
+            return new Docente(nombre, idInt, correo, contrasena, fechaRegistro);
         }
         return null;
     }
 
     private static void reconstruirRelaciones() {
-        // 1. Limpiar relaciones existentes en todos los objetos
         for (Usuario u : usuarios) {
-            if (u instanceof Alumno) { // Cambiado a CamelCase
-                ((Alumno) u).getHistorialCursos().clear(); // Cambiado a CamelCase
-                ((Alumno) u).getNotas().clear(); // Cambiado a CamelCase
-            } else if (u instanceof Docente) { // Cambiado a CamelCase
-                ((Docente) u).getCursosDictados().clear(); // Cambiado a CamelCase
+            if (u instanceof Alumno) {
+                ((Alumno) u).getHistorialCursos().clear();
+                ((Alumno) u).getNotas().clear();
+            } else if (u instanceof Docente) {
+                ((Docente) u).getCursosDictados().clear();
             }
         }
-        for (Curso c : cursos) { // Cambiado a CamelCase
+        for (Curso c : cursos) {
             c.getInscriptos().clear();
             c.getCalificacionesCurso().clear();
         }
 
-        // 2. Reconstruir cursos a docentes (ya se hace en leerCursos, pero aseguramos)
-        for (Curso c : cursos) { // Cambiado a CamelCase
+        for (Curso c : cursos) {
             if (c.getDocente() != null) {
-                Optional<Docente> docenteEnMemoria = usuarios.stream() // Cambiado a CamelCase
-                        .filter(u -> u instanceof Docente && u.getId() == c.getDocente().getId()) // Cambiado a CamelCase
-                        .map(u -> (Docente) u) // Cambiado a CamelCase
+                Optional<Docente> docenteEnMemoria = usuarios.stream()
+                        .filter(u -> u instanceof Docente && u.getId() == c.getDocente().getId())
+                        .map(u -> (Docente) u)
                         .findFirst();
                 docenteEnMemoria.ifPresent(d -> {
                     if (!d.getCursosDictados().contains(c)) {
@@ -454,19 +439,18 @@ public class GestorArchivos {
             }
         }
 
-        // 3. Reconstruir Inscripciones
-        for (Inscripcion insc : inscripciones) { // Cambiado a CamelCase
-            Optional<Alumno> alumnoOpt = usuarios.stream() // Cambiado a CamelCase
-                    .filter(u -> u instanceof Alumno && u.getId() == insc.getAlumnoId()) // Cambiado a CamelCase
-                    .map(u -> (Alumno) u) // Cambiado a CamelCase
+        for (Inscripcion insc : inscripciones) {
+            Optional<Alumno> alumnoOpt = usuarios.stream()
+                    .filter(u -> u instanceof Alumno && u.getId() == insc.getAlumnoId())
+                    .map(u -> (Alumno) u)
                     .findFirst();
-            Optional<Curso> cursoOpt = cursos.stream() // Cambiado a CamelCase
-                    .filter(c -> c.getCodigo() == insc.getCursoCodigo()) // Cambiado a CamelCase
+            Optional<Curso> cursoOpt = cursos.stream()
+                    .filter(c -> c.getCodigo() == insc.getCursoCodigo())
                     .findFirst();
 
             if (alumnoOpt.isPresent() && cursoOpt.isPresent()) {
-                Alumno alumno = alumnoOpt.get(); // Cambiado a CamelCase
-                Curso curso = cursoOpt.get(); // Cambiado a CamelCase
+                Alumno alumno = alumnoOpt.get();
+                Curso curso = cursoOpt.get();
                 insc.setAlumno(alumno);
                 insc.setCurso(curso);
                 alumno.inscribirseEnCurso(insc);
@@ -476,19 +460,18 @@ public class GestorArchivos {
             }
         }
 
-        // 4. Reconstruir Calificaciones
-        for (Calificacion cal : calificaciones) { // Cambiado a CamelCase
-            Optional<Alumno> alumnoOpt = usuarios.stream() // Cambiado a CamelCase
-                    .filter(u -> u instanceof Alumno && u.getId() == cal.getAlumnoId()) // Cambiado a CamelCase
-                    .map(u -> (Alumno) u) // Cambiado a CamelCase
+        for (Calificacion cal : calificaciones) {
+            Optional<Alumno> alumnoOpt = usuarios.stream()
+                    .filter(u -> u instanceof Alumno && u.getId() == cal.getAlumnoId())
+                    .map(u -> (Alumno) u)
                     .findFirst();
-            Optional<Curso> cursoOpt = cursos.stream() // Cambiado a CamelCase
-                    .filter(c -> c.getCodigo() == cal.getCursoCodigo()) // Cambiado a CamelCase
+            Optional<Curso> cursoOpt = cursos.stream()
+                    .filter(c -> c.getCodigo() == cal.getCursoCodigo())
                     .findFirst();
 
             if (alumnoOpt.isPresent() && cursoOpt.isPresent()) {
-                Alumno alumno = alumnoOpt.get(); // Cambiado a CamelCase
-                Curso curso = cursoOpt.get(); // Cambiado a CamelCase
+                Alumno alumno = alumnoOpt.get();
+                Curso curso = cursoOpt.get();
                 cal.setAlumno(alumno);
                 cal.setCurso(curso);
                 alumno.agregarNota(cal);

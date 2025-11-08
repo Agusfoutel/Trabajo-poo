@@ -2,7 +2,7 @@ package View;
 
 import Model.Alumno;
 import Model.Calificacion;
-import Model.GestorArchivos; // Asegurarse de importar GestorArchivos para main de prueba
+import Model.GestorArchivos;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List; // Usamos List para las colecciones
+import java.util.List;
 
 public class VentanaNotasAlumno extends JFrame implements ActionListener {
 

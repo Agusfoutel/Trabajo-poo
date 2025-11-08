@@ -2,7 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List; // Usamos List para las colecciones
+import java.util.List;
 
 public class Docente extends Usuario {
     private List<Curso> cursosDictados;
@@ -23,8 +23,8 @@ public class Docente extends Usuario {
                     if(i.getAlumno().getLegajo() == legajo){
                         Calificacion nuevaNota = new Calificacion(i.getAlumno(), curso, notaValor);
                         i.getAlumno().agregarNota(nuevaNota);
-                        curso.addCalificacion(nuevaNota); // Añadir al curso
-                        GestorArchivos.addCalificacion(nuevaNota); // Añadir al gestor global en memoria
+                        curso.addCalificacion(nuevaNota);
+                        GestorArchivos.addCalificacion(nuevaNota);
                         System.out.println("Nota " + notaValor + " asignada a alumno " + i.getAlumno().getNombre() + " en curso " + curso.getNombre());
                         return;
                     }

@@ -2,7 +2,7 @@ package View;
 
 import Model.Alumno;
 import Model.Inscripcion;
-import Model.GestorArchivos; // Asegurarse de importar GestorArchivos para main de prueba
+import Model.GestorArchivos;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

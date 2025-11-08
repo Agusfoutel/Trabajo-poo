@@ -1,7 +1,7 @@
 package Model;
 
 
-import java.util.ArrayList; // antes tenías java.lang.reflect.Array que está mal
+import java.util.ArrayList;
 
 public class Administrador {
     private ArrayList<Usuario> usuarios;

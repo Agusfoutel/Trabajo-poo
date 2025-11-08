@@ -2,7 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List; // Usamos List para las colecciones
+import java.util.List;
 
 public class Alumno extends Usuario {
     private int legajo;

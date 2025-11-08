@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import Model.Alumno;
-import Model.GestorArchivos; // Asegurarse que GestorArchivos esté importado para main de prueba
+import Model.GestorArchivos;
 
 public class VentanaAlumno extends JFrame implements ActionListener {
 

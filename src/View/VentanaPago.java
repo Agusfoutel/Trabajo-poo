@@ -1,6 +1,6 @@
 package View;
 
-import Model.*; // Importamos todas las clases del modelo que vamos a usar
+import Model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.DefaultTableModel; // ¡Añade esta línea!
+import javax.swing.table.DefaultTableModel;
 
 
 public class VentanaPago extends JDialog implements ActionListener {
@@ -25,11 +25,10 @@ public class VentanaPago extends JDialog implements ActionListener {
     private JComboBox<Integer> cbCuotas;
     private JButton btnConfirmar, btnCancelar;
 
-    // Callback para notificar a la ventana padre
     private VentanaInscripcionCursos ventanaPadre;
 
     public VentanaPago(JFrame owner, Alumno alumno, Curso curso, VentanaInscripcionCursos padre) {
-        super(owner, "Realizar Pago", true); // true para hacerla modal
+        super(owner, "Realizar Pago", true);
         this.alumnoLogueado = alumno;
         this.cursoSeleccionado = curso;
         this.costoBaseCurso = curso.getCosto();
@@ -37,13 +36,12 @@ public class VentanaPago extends JDialog implements ActionListener {
 
         setSize(450, 400);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(owner); // Centrarla respecto a la ventana padre
+        setLocationRelativeTo(owner);
         setLayout(new BorderLayout());
 
         crearPanelPago();
         add(panelPago);
 
-        // Inicializar la UI y el cálculo
         actualizarMontoFinal();
         setVisible(true);
     }
@@ -72,26 +70,25 @@ public class VentanaPago extends JDialog implements ActionListener {
         lblMetodoPago.setBounds(50, 140, 150, 25);
         panelPago.add(lblMetodoPago);
 
-        cbMetodoPago = new JComboBox<>(MetodoPago.values()); // Usamos el enum directamente
+        cbMetodoPago = new JComboBox<>(MetodoPago.values());
         cbMetodoPago.setBounds(200, 140, 180, 30);
         estilizarComboBox(cbMetodoPago);
-        cbMetodoPago.addActionListener(this); // Escuchar cambios en la selección
+        cbMetodoPago.addActionListener(this);
         panelPago.add(cbMetodoPago);
 
         lblCuotas = new JLabel("Cuotas:", SwingConstants.LEFT);
         lblCuotas.setBounds(50, 180, 150, 25);
         panelPago.add(lblCuotas);
 
-        // Inicializar JComboBox de cuotas (1 a 12)
         List<Integer> cuotasList = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             cuotasList.add(i);
         }
         cbCuotas = new JComboBox<>(cuotasList.toArray(new Integer[0]));
-        cbCuotas.setSelectedItem(1); // Por defecto 1 cuota
+        cbCuotas.setSelectedItem(1);
         cbCuotas.setBounds(200, 180, 180, 30);
         estilizarComboBox(cbCuotas);
-        cbCuotas.addActionListener(this); // Escuchar cambios
+        cbCuotas.addActionListener(this);
         panelPago.add(cbCuotas);
 
         lblMontoFinal = new JLabel("Monto Final: Calculando...", SwingConstants.CENTER);
@@ -108,7 +105,6 @@ public class VentanaPago extends JDialog implements ActionListener {
         btnConfirmar.addActionListener(this);
         btnCancelar.addActionListener(this);
 
-        // Ajustar visibilidad inicial de cuotas
         actualizarVisibilidadCuotas();
     }
 
@@ -122,28 +118,25 @@ public class VentanaPago extends JDialog implements ActionListener {
     private void actualizarMontoFinal() {
         MetodoPago selectedMethod = (MetodoPago) cbMetodoPago.getSelectedItem();
         double montoCalculado = costoBaseCurso;
-        int cuotas = (int) cbCuotas.getSelectedItem(); // Obtener cuotas seleccionadas
+        int cuotas = (int) cbCuotas.getSelectedItem();
 
         if (selectedMethod == null) {
             lblMontoFinal.setText("Monto Final: Seleccione método");
             return;
         }
 
-        // Usamos las clases de pago para calcular el monto final
         switch (selectedMethod) {
             case EFECTIVO:
                 Efectivo pagoEfectivo = new Efectivo(0, costoBaseCurso, LocalDate.now(), "Efectivo");
                 montoCalculado = pagoEfectivo.calcularMontoFinal();
-                cuotas = 1; // Siempre 1 cuota para efectivo
+                cuotas = 1;
                 break;
             case TARJETA_DEBITO:
                 TarjetaDebito pagoDebito = new TarjetaDebito(0, costoBaseCurso, LocalDate.now(), "Débito", 0, LocalDate.now(), 0);
                 montoCalculado = pagoDebito.calcularMontoFinal();
-                cuotas = 1; // Siempre 1 cuota para débito
+                cuotas = 1;
                 break;
             case TARJETA_CREDITO:
-                // Para el cálculo del monto final, no necesitamos los datos reales de la tarjeta, solo el monto base y las cuotas
-                // Creamos una TarjetaCredito dummy para usar su método calcularMontoFinal
                 TarjetaCredito pagoCredito = new TarjetaCredito(0, costoBaseCurso, LocalDate.now(), "Crédito", 0, LocalDate.now(), 0, cuotas);
                 montoCalculado = pagoCredito.calcularMontoFinal();
                 break;
@@ -186,14 +179,14 @@ public class VentanaPago extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnCancelar) {
-            this.dispose(); // Cerrar la ventana de pago
+            this.dispose();
         } else if (e.getSource() == btnConfirmar) {
             realizarInscripcionConPago();
         } else if (e.getSource() == cbMetodoPago) {
-            actualizarVisibilidadCuotas(); // Actualizar visibilidad de cuotas
-            actualizarMontoFinal(); // Recalcular monto al cambiar método de pago
+            actualizarVisibilidadCuotas();
+            actualizarMontoFinal();
         } else if (e.getSource() == cbCuotas) {
-            actualizarMontoFinal(); // Recalcular monto al cambiar cuotas
+            actualizarMontoFinal();
         }
     }
 
@@ -204,7 +197,7 @@ public class VentanaPago extends JDialog implements ActionListener {
                 lblMontoFinal.getText()
                         .replace("Monto Final: ", "")
                         .replace(" USD", "")
-                        .replace(",", ".") // ¡AÑADE ESTA LÍNEA!
+                        .replace(",", ".")
         );
 
         if (selectedMetodoPago == null) {
@@ -212,28 +205,24 @@ public class VentanaPago extends JDialog implements ActionListener {
             return;
         }
 
-        // Si es efectivo o débito, las cuotas siempre son 1
         if (selectedMetodoPago == MetodoPago.EFECTIVO || selectedMetodoPago == MetodoPago.TARJETA_DEBITO) {
             cuotas = 1;
         }
 
-        // Crear la inscripción con los detalles de pago
         Inscripcion nuevaInscripcion = new Inscripcion(true, cursoSeleccionado, alumnoLogueado, LocalDate.now(),
                 selectedMetodoPago, montoFinal, cuotas);
 
-        // Registrar la inscripción en el modelo
         alumnoLogueado.inscribirseEnCurso(nuevaInscripcion);
         cursoSeleccionado.agregarInscripcion(nuevaInscripcion);
-        GestorArchivos.addInscripcion(nuevaInscripcion); // Guardar en archivo y memoria
+        GestorArchivos.addInscripcion(nuevaInscripcion);
 
         JOptionPane.showMessageDialog(this,
                 "¡Inscripción exitosa en " + cursoSeleccionado.getNombre() + "!\nMonto pagado: " + String.format("%.2f USD", montoFinal) +
                         "\nMétodo: " + selectedMetodoPago + (selectedMetodoPago == MetodoPago.TARJETA_CREDITO ? " en " + cuotas + " cuotas" : ""),
                 "Inscripción Confirmada", JOptionPane.INFORMATION_MESSAGE);
 
-        this.dispose(); // Cerrar la ventana de pago
+        this.dispose();
 
-        // Notificar a la ventana padre para que recargue la tabla
         if (ventanaPadre != null) {
             ventanaPadre.cargarCursosEnTabla((DefaultTableModel) ventanaPadre.getTablaCursos().getModel());
         }

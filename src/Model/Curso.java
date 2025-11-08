@@ -1,7 +1,7 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.List; // Usamos List para las colecciones
+import java.util.List;
 
 public class Curso {
     private int codigo;
@@ -10,16 +10,16 @@ public class Curso {
     private Docente docente;
     private List<Inscripcion> inscriptos;
     private List<Calificacion> calificacionesCurso;
-    private double costo; // ¡NUEVO ATRIBUTO!
+    private double costo;
 
-    public Curso(int codigo, String nombre, int cuposMax, Docente docente, double costo) { // ¡Constructor Actualizado!
+    public Curso(int codigo, String nombre, int cuposMax, Docente docente, double costo) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.cuposMax = cuposMax;
         this.docente = docente;
         this.inscriptos = new ArrayList<>();
         this.calificacionesCurso = new ArrayList<>();
-        this.costo = costo; // Inicializar el costo
+        this.costo = costo;
     }
 
     public void agregarInscripcion(Inscripcion insc) {
@@ -70,7 +70,6 @@ public class Curso {
         this.calificacionesCurso.add(cal);
     }
 
-    // ¡NUEVO GETTER PARA EL COSTO!
     public double getCosto() {
         return costo;
     }

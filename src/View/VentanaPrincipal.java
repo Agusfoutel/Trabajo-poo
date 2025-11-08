@@ -3,7 +3,7 @@ package View;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import Model.GestorArchivos; // Ahora GestorArchivos es el central
+import Model.GestorArchivos;
 import Model.Usuario;
 import Model.Alumno;
 import Model.Docente;
@@ -30,7 +30,6 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Inicializar GestorArchivos al inicio de la aplicación
         GestorArchivos.inicializarDatos();
 
         crearPanelInicio();
@@ -157,7 +156,6 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         lblMensajeLogin.setVisible(false);
     }
 
-    // Estilos - Mismos que los tuyos
     private JButton crearBoton(String texto, int x, int y) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, 150, 60);
@@ -250,7 +248,6 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
             lblSubtituloLogin.setText("Seleccioná tu rol para ingresar");
         }
 
-        // --- Lógica del Panel de Registro ---
         if (modoRegistro && (src == btnAlumnoRegistro || src == btnDocenteRegistro)) {
             tipoUsuarioRegistro = (src == btnAlumnoRegistro) ? "alumno" : "docente";
 
@@ -268,7 +265,6 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
 
         if (modoRegistro && src == btnRegistrar) registrarUsuario();
 
-        // --- Lógica del Panel de Login ---
         if (!modoRegistro && (src == btnAlumnoLogin || src == btnDocenteLogin)) {
             tipoUsuarioLogin = (src == btnAlumnoLogin) ? "alumno" : "docente";
 
@@ -285,7 +281,6 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
 
         if (!modoRegistro && src == btnIngresarLogin) iniciarSesion();
 
-        // --- Botones Volver ---
         if (src == btnVolverRegistro || src == btnVolverLogin) {
             cambiarPanel(panelInicio);
             lblMensajeRegistro.setText("");
@@ -312,8 +307,8 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
             return;
         }
 
-        String id = GestorArchivos.generarId(tipoUsuarioRegistro); // Genera ID numérico
-        GestorArchivos.guardarUnSoloUsuario(tipoUsuarioRegistro, nombre, correo, contrasena, id); // Guarda en JSON y en memoria
+        String id = GestorArchivos.generarId(tipoUsuarioRegistro);
+        GestorArchivos.guardarUnSoloUsuario(tipoUsuarioRegistro, nombre, correo, contrasena, id);
 
         lblMensajeRegistro.setText("Registro exitoso.");
         lblIdGenerado.setText("Tu ID es: " + id);
@@ -334,7 +329,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
             return;
         }
 
-        Usuario usuarioLogueado = GestorArchivos.validarLogin(nombre, id, tipo); // Valida contra la lista en memoria
+        Usuario usuarioLogueado = GestorArchivos.validarLogin(nombre, id, tipo);
 
         if (usuarioLogueado != null) {
             lblMensajeLogin.setText("Bienvenido " + tipo + ".");

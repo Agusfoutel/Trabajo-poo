@@ -62,7 +62,6 @@ public class VentanaPonerNota extends JFrame implements ActionListener {
         estilizarComboBox(cbCursos);
         panelPonerNota.add(cbCursos);
 
-        // ¡Mueve estas líneas AQUÍ!
         lblAlumno = new JLabel("Seleccionar Alumno:");
         lblAlumno.setBounds(50, 140, 150, 25);
         panelPonerNota.add(lblAlumno);
@@ -79,12 +78,10 @@ public class VentanaPonerNota extends JFrame implements ActionListener {
 
         btnAsignar = crearBotonGrande("Asignar Nota", 150, 260);
         panelPonerNota.add(btnAsignar);
-        // ¡Hasta aquí! Ahora todos los botones y combos existen.
 
-        // Ahora sí, puedes llamar a cargarCursosDocente()
         cargarCursosDocente();
         cbCursos.addActionListener(this);
-        actualizarAlumnosEnCurso(); // Asegurarse de que los alumnos se carguen inicialmente
+        actualizarAlumnosEnCurso();
 
         btnVolver = crearBotonPequeno("← Volver", 30, 20);
         panelPonerNota.add(btnVolver);

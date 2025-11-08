@@ -17,8 +17,8 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
 
     private Docente docenteLogueado;
     private JPanel panelCrearCurso;
-    private JLabel lblTitulo, lblNombre, lblDescripcion, lblCupo, lblCosto; // ¡Añadir lblCosto!
-    private JTextField txtNombre, txtDescripcion, txtCupo, txtCosto; // ¡Añadir txtCosto!
+    private JLabel lblTitulo, lblNombre, lblDescripcion, lblCupo, lblCosto;
+    private JTextField txtNombre, txtDescripcion, txtCupo, txtCosto;
     private JButton btnCrear, btnVolver;
 
 
@@ -65,15 +65,14 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
         txtCupo = crearCampo("", 200, 190);
         panelCrearCurso.add(txtCupo);
 
-        // ¡NUEVO CAMPO PARA EL COSTO!
         lblCosto = new JLabel("Costo del Curso (USD):");
-        lblCosto.setBounds(50, 230, 150, 25); // Ajustar posición
+        lblCosto.setBounds(50, 230, 150, 25);
         panelCrearCurso.add(lblCosto);
-        txtCosto = crearCampo("", 200, 230); // Ajustar posición
+        txtCosto = crearCampo("", 200, 230);
         panelCrearCurso.add(txtCosto);
 
 
-        btnCrear = crearBotonGrande("Crear Curso", 150, 290); // Ajustar posición del botón
+        btnCrear = crearBotonGrande("Crear Curso", 150, 290);
         panelCrearCurso.add(btnCrear);
 
 
@@ -149,7 +148,7 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el cupo máximo.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            try { // ¡Parsear el costo!
+            try {
                 costoCurso = Double.parseDouble(txtCosto.getText());
                 if (costoCurso < 0) throw new NumberFormatException();
             } catch (NumberFormatException ex) {
@@ -169,7 +168,7 @@ public class VentanaCrearCurso extends JFrame implements ActionListener {
 
             Curso nuevoCurso = new Curso(codigoCurso, nombreCurso, cupoMaximo, docenteLogueado, costoCurso);
 
-            GestorArchivos.addCurso(nuevoCurso); // Añadir a GestorArchivos (en memoria y a disco)
+            GestorArchivos.addCurso(nuevoCurso);
             docenteLogueado.dictarCurso(nuevoCurso);
 
             JOptionPane.showMessageDialog(this, "Curso '" + nombreCurso + "' creado con éxito. Código: " + codigoCurso, "Curso Creado", JOptionPane.INFORMATION_MESSAGE);
